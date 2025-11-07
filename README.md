@@ -15,7 +15,7 @@ Após isso, você verá os logs intercalados. O cliente mostrará a requisição
 
 Para encerrar a execução, use Cntrl+C
 
-###ARQUITETURA
+### ARQUITETURA
 
 Rede: Uma rede do tipo bridge chamada 'rede-desafio1' foi criada pra conectar exclusivamente esses dois containeres.
 
@@ -23,7 +23,7 @@ Container 1 (servidor): Usa a imagem nginx:alpine. Foi configurado via arquivo n
 
 Container 2 (cliente): Usa a imagem alpine/curl. Executa um script em shell que entra em loop infinito, realizando uma requisição HTTP para o container servidor a cada 5 segundos.
 
-###DECISÕES TÉCNICAS
+### DECISÕES TÉCNICAS
 
 Docker Compose: usei o compose pra definitir a infraestrutura como código, facilitando a execução e garantindo que a rede seja sempre criada automaticamente junto com os containeres. Além disso, o docker compose foi utilizado em sala de aula, então optei por familiaridade.
 
