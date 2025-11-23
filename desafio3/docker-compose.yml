@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # 1.Serviço de banco de dados (DB)
+  db:
+    image: postgres:15-alpine
+    container_name: desafio3-db
+    environment:
+      POSTGRES_USER: desafio_user
+      POSTGRES_PASSWORD: desafio_password
+      POSTGRES_DB: desafio3_app_db
+    volumes:
+      - dados_db_desafio3:/var/lib/postgresql/data
+    networks:
+      - desafio3_rede
+    restart: always
+
+  # 2.Serviço de cache (redis)
+  cache:
+    image: redis:alpine
+    container_name: desafio3-cache
+    networks:
+      - desafio3_rede
+    restart: always
+
+  #3. Serviço web (aplicação)
+  web:
+    image: busybox
+    container_name: desafio3-web-app
+    #configurando as dependências: a web precisa do db e do cache para iniciar
+    depends_on:
+      - db
+      - cache
+    environment:
+      # variáveis de ambiente que a aplicação 'web' usaria para se conectar:
+      DB_HOST: db 
+      DB_USER: desafio_user
+      DB_PASSWORD: desafio_password
+      CACHE_HOST: cache
+      CACHE_PORT: 6379
+    ports:
+      - "8080:8080"
+    networks:
+      - desafio3_rede
+    #sh para manter o container rodando e poder fazer testes via exec
+    entrypoint: ["sh", "-c", "echo 'Web App Rodando...' && tail -f /dev/null"] 
+    restart: always
+
+# Definição de Rede
+networks:
+  desafio3_rede:
+    driver: bridge
+
+#definição de volume (para persistência do DB, boa prática)
+volumes:
+  dados_db_desafio3:
