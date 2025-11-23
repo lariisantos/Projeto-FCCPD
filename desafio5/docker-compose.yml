@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  #1. Gateway (Ponto Único de Entrada)
+  api-gateway:
+    image: nginx:alpine
+    container_name: desafio5-gateway
+    ports:
+      - "80:80" #porta externa 80 (padrão HTTP) para acessar o Gateway
+    volumes:
+      #monta o arquivo de configuração do Nginx no container
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - desafio5_rede
+    depends_on:
+      #o gateway só precisa subir depois dos serviços que ele roteia
+      - service-users
+      - service-orders
+    restart: always
+
+  #2. Microsserviço de Usuários
+  service-users:
+    build: ./service_users
+    container_name: desafio5-users
+    networks:
+      - desafio5_rede
+    restart: always
+
+  #3. Microsserviço de Pedidos
+  service-orders:
+    build: ./service_orders
+    container_name: desafio5-orders
+    networks:
+      - desafio5_rede
+    restart: always
+
+networks:
+  desafio5_rede:
+    driver: bridge
