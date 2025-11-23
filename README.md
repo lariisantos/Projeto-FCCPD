@@ -157,3 +157,63 @@ Container 3 (Web): Usa a imagem `busybox`. Simula a camada de **aplicação (Bac
 **Nomes de serviço como DNS:** Dentro da rede interna, o serviço **`web`** utiliza os nomes dos serviços (`db` e `cache`) como hostnames para estabelecer a comunicação, o que é a prática padrão do Docker Compose para comunicação entre contêineres.
 
 **Serviço Web Simulado:** O serviço **`web`** utiliza a imagem **`busybox`** apenas para fins de teste. Com o `entrypoint` configurado para `tail -f /dev/null`, o container se mantém ativo e funcional, permitindo a execução de comandos de rede (`ping` e `nc`) para comprovar o sucesso da orquestração.
+
+---
+
+# Desafio 4: Microsserviços Independentes
+
+Este desafio demonstra uma arquitetura de **microsserviços reais**, onde dois serviços isolados se comunicam exclusivamente via requisições **HTTP**. O objetivo é comprovar o isolamento de responsabilidades e a comunicação funcional entre os serviços através da rede Docker.
+
+---
+
+### INSTRUÇÕES DE EXECUÇÃO
+
+**Pré-requisitos**: Docker e Docker Compose instalados.
+
+1.  Navegue até o diretório do desafio ( `cd desafio4` )
+2.  Construa as imagens e inicie os serviços:
+    ```bash
+    docker-compose up --build -d
+    ```
+3.  **Teste do Serviço A (Fornecedor):** Acesse o endpoint do Serviço A no seu navegador para verificar a lista de usuários em formato JSON:
+    `http://localhost:5000/usuarios`
+    
+    <img width="324" height="407" alt="image" src="https://github.com/user-attachments/assets/841a7d92-5236-4ebc-9e66-befa35270034" />
+
+
+
+4.  **Teste do Serviço B (Consumidor):** Acesse o endpoint do Serviço B para verificar a comunicação HTTP e o processamento dos dados:
+    `http://localhost:5001/info`
+
+    O Serviço B consumirá o Serviço A, formatará a saída (ex: "Usuário X ativo desde...") e a exibirá, comprovando a comunicação entre os contêineres.
+
+    <img width="490" height="252" alt="image" src="https://github.com/user-attachments/assets/09281828-16ce-4761-aff2-2b756d3c74b2" />
+
+
+Para encerrar a execução e remover containers/rede: `docker-compose down`
+
+---
+
+### ARQUITETURA
+
+Rede: Uma rede do tipo bridge chamada **'desafio4_rede'** foi criada para conectar exclusivamente os dois microsserviços.
+
+Microsserviço A: Contido no diretório `service_a/`. É o **Fornecedor de Dados**.
+* Usa Flask em Python para expor o endpoint `/usuarios` (porta 5000) com uma lista mockada de usuários.
+* É acessado pelo Serviço B através do hostname **`service-a`**.
+
+Microsserviço B: Contido no diretório `service_b/`. É o **Consumidor de Dados**.
+* Usa Flask e a biblioteca `requests` para fazer uma requisição HTTP GET ao Serviço A.
+* Expõe o endpoint `/info` (porta 5001) com os dados formatados.
+
+---
+
+### DECISÕES TÉCNICAS
+
+**Isolamento Completo (Dockerfiles):** Cada microsserviço possui seu próprio `Dockerfile` e diretório, garantindo que sejam **construídos de forma independente**, cumprindo o requisito de isolamento.
+
+**Comunicação Via HTTP:** A comunicação entre os contêineres é realizada puramente por requisições HTTP (`requests` em Python), simulando o comportamento de APIs em uma arquitetura distribuída.
+
+**Configuração com Variáveis de Ambiente:** O endereço do Serviço A é passado para o Serviço B via **variável de ambiente** (`SERVICE_A_URL`). Isso garante que o código da aplicação seja agnóstico ao ambiente, usando apenas o hostname **`service-a:5000`** definido pelo Docker.
+
+**Tecnologia Flask:** Foi utilizada a *framework* Flask (Python) por sua leveza e agilidade para criar e testar APIs rapidamente, focando na lógica de comunicação Docker, e não na complexidade da aplicação.
