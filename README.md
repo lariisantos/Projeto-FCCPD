@@ -98,3 +98,62 @@ Container 2 (Leitor): Usa a imagem `postgres:15-alpine` (apenas como cliente `ps
 **Acesso Via Rede (Opcional):** O container `leitor_desafio2` acessa o banco usando o nome do serviço (`desafio2-db`) e injetando a senha via variável de ambiente (`PGPASSWORD`), demonstrando uma comunicação típica de microserviços.
 
 **Imagem Alpine:** Uso de versões baseadas em Alpine Linux para manter o tamanho das imagens leve e otimizar o tempo de *download* e *startup*.
+
+---
+
+# Desafio 3: Docker Compose Orquestrando Serviços 
+
+Esse desafio tem como objetivo principal usar o **Docker Compose** para orquestrar e gerenciar três serviços distintos (`web`, `db` e `cache`) que dependem uns dos outros. O foco é garantir a comunicação entre os serviços e configurar as dependências e variáveis de ambiente corretamente.
+
+---
+
+### INSTRUÇÕES DE EXECUÇÃO
+
+**Pré-requisitos**: Docker e Docker Compose instalados.
+
+1.  Navegue até o diretório do desafio ( `cd desafio3` )
+2.  Inicie os containers em modo *detached* (segundo plano):
+    ```bash
+    docker-compose up -d
+    ```
+3.  **Teste de Comunicação:** Acesse o container web e comprove a conexão com os demais serviços usando seus nomes de host (DNS interno):
+    ```bash
+    #acessa o shell do container da aplicação
+    docker exec -it desafio3-web-app sh
+    
+    #testa a conexão com o Cache (Redis)
+    ping cache -c 3
+    
+    #testa a conexão com o DB (PostgreSQL) na porta 5432
+    nc -vz db 5432
+    ```
+    O resultado esperado é `0% packet loss` no `ping` e a porta **`5432 open`** no `nc`, comprovando a comunicação entre os serviços.
+
+    <img width="998" height="325" alt="image" src="https://github.com/user-attachments/assets/4fbe741f-2599-40fd-b382-41798bd32e8e" />
+
+
+Para encerrar a execução e remover containers/rede: `docker-compose down`
+
+---
+
+### ARQUITETURA
+
+Rede: Uma rede do tipo bridge chamada **'desafio3_rede'** foi criada para conectar os três serviços.
+
+Container 1 (DB): Usa a imagem `postgres:15-alpine`. É o **Banco de Dados PostgreSQL** principal, com um Volume Nomeado para persistência de dados.
+
+Container 2 (Cache): Usa a imagem `redis:alpine`. É o serviço de **Cache Redis**.
+
+Container 3 (Web): Usa a imagem `busybox`. Simula a camada de **aplicação (Backend)**. Ele é usado como ponto de teste para comprovar a comunicação com o DB e o Cache.
+
+---
+
+### DECISÕES TÉCNICAS
+
+**Docker Compose e Orquestração:** Utilizado para definir a infraestrutura como código, garantindo que a rede, os volumes e as variáveis de ambiente sejam criados e configurados corretamente.
+
+**Dependências (`depends_on`):** O serviço **`web`** foi configurado com `depends_on: [db, cache]`. Isso garante que o Docker Compose inicialize primeiro o Banco de Dados e o Cache antes de tentar iniciar a aplicação web, assegurando a ordem de *startup*.
+
+**Nomes de serviço como DNS:** Dentro da rede interna, o serviço **`web`** utiliza os nomes dos serviços (`db` e `cache`) como hostnames para estabelecer a comunicação, o que é a prática padrão do Docker Compose para comunicação entre contêineres.
+
+**Serviço Web Simulado:** O serviço **`web`** utiliza a imagem **`busybox`** apenas para fins de teste. Com o `entrypoint` configurado para `tail -f /dev/null`, o container se mantém ativo e funcional, permitindo a execução de comandos de rede (`ping` e `nc`) para comprovar o sucesso da orquestração.
