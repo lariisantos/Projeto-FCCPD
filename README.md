@@ -37,7 +37,7 @@ Imagem Alpine: foi usado versões baseadas em alpine linux para manter as imagen
 
 ---
 
-# Desafio 2: Documentação de Volumes e Persistência de Dados
+# Desafio 2: Volumes e Persistência de Dados
 
 Esse desafio documenta a implementação e comprovação da **persistência de dados** para um banco de dados PostgreSQL utilizando **volumes nomeados** do Docker. O projeto também incluiu o uso de um container secundário para acessar os dados através da rede Docker, simulando um ambiente de aplicação (desafio opcional). O objetivo é comprovar que os dados sobrevivem mesmo após a remoção e recriação do container.
 
