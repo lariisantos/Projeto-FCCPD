@@ -217,3 +217,61 @@ Microsserviço B: Contido no diretório `service_b/`. É o **Consumidor de Dados
 **Configuração com Variáveis de Ambiente:** O endereço do Serviço A é passado para o Serviço B via **variável de ambiente** (`SERVICE_A_URL`). Isso garante que o código da aplicação seja agnóstico ao ambiente, usando apenas o hostname **`service-a:5000`** definido pelo Docker.
 
 **Tecnologia Flask:** Foi utilizada a *framework* Flask (Python) por sua leveza e agilidade para criar e testar APIs rapidamente, focando na lógica de comunicação Docker, e não na complexidade da aplicação.
+
+
+---
+
+# Desafio 5: Microsserviços com API Gateway
+
+Este desafio implementa uma arquitetura de microsserviços onde o acesso externo é **centralizado** através de um **API Gateway** (utilizando Nginx). O Gateway é o único ponto de entrada para a aplicação, sendo responsável por rotear as requisições para os microsserviços corretos via rede interna.
+
+---
+
+### INSTRUÇÕES DE EXECUÇÃO
+
+**Pré-requisitos**: Docker e Docker Compose instalados.
+
+1.  Navegue até o diretório do desafio ( `cd desafio5` )
+2.  Construa as imagens e inicie os serviços:
+    ```bash
+    docker-compose up --build -d
+    ```
+3.  **Teste do Gateway (Users):** Acesse o endpoint `/users` através da porta padrão do Gateway (`80`). O Gateway irá rotear internamente para o Microsserviço 1:
+    `http://localhost/users`
+
+    <img width="317" height="274" alt="image" src="https://github.com/user-attachments/assets/6753d1ed-5d80-44c6-bf8a-835ed6663073" />
+
+
+5.  **Teste do Gateway (Orders):** Acesse o endpoint `/orders` através da porta padrão do Gateway (`80`). O Gateway irá rotear internamente para o Microsserviço 2:
+    `http://localhost/orders`
+    
+    <img width="286" height="339" alt="image" src="https://github.com/user-attachments/assets/60a8c2bc-efd7-490d-a350-212434c37776" />
+
+
+Ambos os testes são acessados pela porta **80** (do Gateway), comprovando que ele funciona como ponto único de entrada.
+
+Para encerrar a execução e remover containers/rede: `docker-compose down`
+
+---
+
+### ARQUITETURA
+
+Rede: Uma rede do tipo bridge chamada **'desafio5_rede'** foi criada para conectar todos os serviços de forma isolada.
+
+Container 1 (Gateway): Usa a imagem `nginx:alpine` com um arquivo de configuração (`nginx.conf`) customizado. Este é o **ponto único de entrada** exposto na porta **80** e faz o roteamento (`proxy_pass`) para os serviços internos.
+
+Microsserviço 1 (Users): Usa Python/Flask. É o Fornecedor de dados de usuários no endpoint `/api/users` (porta 5000). Acessível internamente via hostname **`service-users`**.
+
+Microsserviço 2 (Orders): Usa Python/Flask. É o Fornecedor de dados de pedidos no endpoint `/api/orders` (porta 5001). Acessível internamente via hostname **`service-orders`**.
+
+---
+
+### DECISÕES TÉCNICAS
+
+**API Gateway com Nginx:** Foi utilizado o Nginx por sua eficiência e robustez como proxy reverso. O `nginx.conf` mapeia caminhos da URL externa (`/users`, `/orders`) para endereços internos completos (`http://service-users:5000/api/users`), garantindo a **separação de domínios** e o **roteamento centralizado**.
+
+**Centralização do Acesso:** Apenas o contêiner do **Gateway** expõe portas para o host (`80:80`). Os microsserviços de `users` e `orders` não expõem portas diretamente, reforçando o conceito de que o acesso deve ser mediado pelo Gateway.
+
+**Integração Interna:** A comunicação entre o Gateway e os microsserviços é feita via hostname do Docker Compose (`service-users` e `service-orders`), garantindo uma integração robusta e desacoplada de endereços IP.
+
+**Serviços Leves:** Utilização do Flask (Python) para criar APIs leves e rápidas, focando no desafio de orquestração e roteamento, e não na complexidade do código de aplicação.
