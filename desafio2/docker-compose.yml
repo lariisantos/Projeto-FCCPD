@@ -1,0 +1,32 @@
+services:
+  db_desafio2:
+    image: postgres:15-alpine
+    container_name: desafio2-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: desafio2
+    volumes:
+      - dados-db-desafio2:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - rede-desafio2
+
+  leitor_desafio2:
+    image: postgres:15-alpine
+    container_name: desafio2-leitor
+    depends_on:
+      - db_desafio2
+    entrypoint: ["tail", "-f", "/dev/null"]
+    networks:
+      - rede-desafio2
+    volumes:
+      - dados-db-desafio2:/var/lib/postgresql/data
+
+networks:
+  rede-desafio2:
+    driver: bridge
+
+volumes:
+  dados-db-desafio2:
