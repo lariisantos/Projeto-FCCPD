@@ -66,14 +66,14 @@ Esse desafio documenta a implementação e comprovação da **persistência de d
     ```
     <img width="1401" height="508" alt="image" src="https://github.com/user-attachments/assets/c48b6d5c-0cfc-47fa-997c-d84f121fe75d" />
 
-5.  **Container Leitor Opcional:** Acesse os dados persistidos usando o segundo container através da rede:
+5.  **Container leitor (Opcional):** Acesse os dados persistidos usando o segundo container através da rede:
     ```bash
     docker exec -it desafio2-leitor sh -c "PGPASSWORD=admin psql -h desafio2-db -U admin -d desafio2 -c 'SELECT * FROM usuarios;'"
     ```
     <img width="1387" height="208" alt="image" src="https://github.com/user-attachments/assets/ec500beb-733e-44f6-9e33-11c719b1663e" />
 
 
-Para encerrar a execução e remover containers/rede (mantendo o volume!): `docker-compose down`
+Para encerrar a execução e remover containers/rede (mantendo o volume): `docker-compose down`
 
 ---
 
@@ -81,7 +81,7 @@ Para encerrar a execução e remover containers/rede (mantendo o volume!): `dock
 
 Rede: Uma rede do tipo bridge chamada **'rede-desafio2'** foi criada para conectar os dois containers.
 
-Volume: Um **Volume Nomeado** chamado **'dados-db-desafio2'** é usado para persistir os dados do PostgreSQL. Ele está mapeado para o diretório `/var/lib/postgresql/data` do container principal.
+Volume: Um **volume nomeado** chamado **'dados-db-desafio2'** é usado para persistir os dados do PostgreSQL. Ele está mapeado para o diretório `/var/lib/postgresql/data` do container principal.
 
 Container 1 (DB): Usa a imagem `postgres:15-alpine`. Responsável por armazenar e gerenciar os dados. Seu ciclo de vida é separado dos dados graças ao volume.
 
