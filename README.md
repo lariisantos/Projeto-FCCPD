@@ -260,9 +260,9 @@ Rede: Uma rede do tipo bridge chamada **'desafio5_rede'** foi criada para conect
 
 Container 1 (Gateway): Usa a imagem `nginx:alpine` com um arquivo de configuração (`nginx.conf`) customizado. Este é o **ponto único de entrada** exposto na porta **80** e faz o roteamento (`proxy_pass`) para os serviços internos.
 
-Microsserviço 1 (Users): Usa Python/Flask. É o Fornecedor de dados de usuários no endpoint `/api/users` (porta 5000). Acessível internamente via hostname **`service-users`**.
+Microsserviço 1 (Users): Usa Python/Flask. É o fornecedor de dados de usuários no endpoint `/api/users` (porta 5000). Acessível internamente via hostname **`service-users`**.
 
-Microsserviço 2 (Orders): Usa Python/Flask. É o Fornecedor de dados de pedidos no endpoint `/api/orders` (porta 5001). Acessível internamente via hostname **`service-orders`**.
+Microsserviço 2 (Orders): Usa Python/Flask. É o fornecedor de dados de pedidos no endpoint `/api/orders` (porta 5001). Acessível internamente via hostname **`service-orders`**.
 
 ---
 
@@ -272,6 +272,6 @@ Microsserviço 2 (Orders): Usa Python/Flask. É o Fornecedor de dados de pedidos
 
 **Centralização do Acesso:** Apenas o contêiner do **Gateway** expõe portas para o host (`80:80`). Os microsserviços de `users` e `orders` não expõem portas diretamente, reforçando o conceito de que o acesso deve ser mediado pelo Gateway.
 
-**Integração Interna:** A comunicação entre o Gateway e os microsserviços é feita via hostname do Docker Compose (`service-users` e `service-orders`), garantindo uma integração robusta e desacoplada de endereços IP.
+**Integração Interna:** A comunicação entre o gateway e os microsserviços é feita via hostname do Docker Compose (`service-users` e `service-orders`), garantindo uma integração robusta e desacoplada de endereços IP.
 
 **Serviços Leves:** Utilização do Flask (Python) para criar APIs leves e rápidas, focando no desafio de orquestração e roteamento, e não na complexidade do código de aplicação.
