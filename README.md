@@ -13,6 +13,9 @@ Esse desafio implementa dois containers Docker que se comunicam através de uma 
 
 Após isso, você verá os logs intercalados. O cliente mostrará a requisição e o servidor vai responder na porta 8080.
 
+<img width="1215" height="260" alt="image" src="https://github.com/user-attachments/assets/5521c0f4-a7ff-4c54-8e2e-b219aca638c3" />
+
+
 Para encerrar a execução, use Cntrl+C
 
 ---
